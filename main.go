@@ -53,8 +53,8 @@ func main() {
 
 // instantiate populates the word slices with the embeded files
 func (svr *Service) instantiate() {
-	adj, _ := data.ReadFile("data/adj.gof")
-	noun, _ := data.ReadFile("data/noun.gof")
+	adj, _ := data.ReadFile("data/adj.txt")
+	noun, _ := data.ReadFile("data/noun.txt")
 	svr.Adjectives = strings.Split(string(adj), " ")
 	svr.Nouns = strings.Split(string(noun), " ")
 }

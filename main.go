@@ -17,6 +17,7 @@ type Response struct {
 }
 
 type Service struct {
+	Port       string
 	Adjectives []string
 	Nouns      []string
 }
@@ -25,30 +26,32 @@ type Service struct {
 var data embed.FS
 
 func main() {
-	// init our little library
-	svr := Service{
-		Adjectives: []string{},
-		Nouns:      []string{},
-	}
-
-	// populate the service with words
-	svr.instantiate()
+	svr := newServer(os.Getenv("PORT"))
 
 	// handle incoming requests
 	http.HandleFunc("/", svr.handler)
 
 	// Determine port for HTTP service.
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "8080"
-	}
 
 	// Start HTTP server.
-	log.Printf("listening on port %s", port)
-	if err := http.ListenAndServe(":"+port, nil); err != nil {
+	log.Printf("listening on port %s", svr.Port)
+	if err := http.ListenAndServe(":"+svr.Port, nil); err != nil {
 		log.Fatal(err)
 	}
 
+}
+
+func newServer(port string) *Service {
+	if port == "" {
+		port = "8080"
+	}
+	svr := Service{
+		Adjectives: []string{},
+		Nouns:      []string{},
+		Port:       port,
+	}
+	svr.instantiate()
+	return &svr
 }
 
 // instantiate populates the word slices with the embeded files

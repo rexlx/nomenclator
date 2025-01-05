@@ -65,21 +65,20 @@ func (svr *Service) instantiate() {
 // name creates a random name
 func (svr *Service) name(seed int64) string {
 	if seed < 1 {
-		seed = time.Now().Unix()
+		seed = time.Now().UnixNano() / int64(time.Millisecond)
 	}
-	rand.Seed(seed)
+	r := rand.New(rand.NewSource(seed))
 
 	return fmt.Sprintf("%s-%s",
-		svr.Adjectives[rand.Intn(len(svr.Adjectives))],
-		svr.Nouns[rand.Intn(len(svr.Nouns))])
-
+		svr.Adjectives[r.Intn(len(svr.Adjectives))],
+		svr.Nouns[r.Intn(len(svr.Nouns))])
 }
 
 // handler handles http requests
 func (svr *Service) handler(w http.ResponseWriter, r *http.Request) {
 	var out Response
 
-	out.Data = svr.name(time.Now().Unix())
+	out.Data = svr.name(time.Now().UnixMicro())
 	res, err := json.Marshal(out)
 	if err != nil {
 		log.Fatalln(err)
